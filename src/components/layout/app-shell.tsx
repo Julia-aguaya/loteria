@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRightLeft, Building2, LayoutDashboard, LogOut, Menu, Settings2 } from 'lucide-react';
+import { ArrowRight, ArrowRightLeft, Building2, CalendarRange, LayoutDashboard, LogOut, Menu, Settings2 } from 'lucide-react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useDemoStore } from '@/app/store/demo-store';
@@ -9,11 +9,17 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } 
 import { cn } from '@/lib/utils';
 
 const navigation = [
-  { to: '/dashboard', label: 'Dashboards', icon: LayoutDashboard },
+  { to: '/inicio', label: 'Inicio', icon: LayoutDashboard },
   { to: '/agencies', label: 'Agencias', icon: Building2 },
-  { to: '/transfers', label: 'Transferencias globales', icon: ArrowRightLeft },
-  { to: '/configuration', label: 'Configuracion', icon: Settings2 },
+  { to: '/cuts', label: 'Cortes', icon: CalendarRange },
 ];
+
+const advancedNavigation = [
+  { to: '/transfers', label: 'Carga masiva', icon: ArrowRightLeft },
+  { to: '/configuration', label: 'Ajustes', icon: Settings2 },
+];
+
+const demoJourney = ['Inicio', 'Agencias', 'Detalle de agencia', 'Registrar transferencia'];
 
 export function AppShell() {
   const { pathname } = useLocation();
@@ -23,6 +29,7 @@ export function AppShell() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const state = useDemoStore();
   const logout = useDemoStore((store) => store.logout);
+  const currentJourneyStep = pathname.startsWith('/agencies') ? 1 : 0;
 
   useEffect(() => {
     const main = mainRef.current;
@@ -81,13 +88,13 @@ export function AppShell() {
       <div className="mx-auto flex min-h-[calc(100dvh-1rem)] max-w-[1480px] flex-col gap-3 sm:min-h-[calc(100dvh-2rem)] sm:gap-4">
         <header ref={headerRef} className="panel-elevated overflow-hidden px-3 py-3.5 md:sticky md:top-4 md:z-40 md:px-5 md:py-4 lg:px-6">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-          <div className="flex flex-col gap-4 rounded-[1.5rem] border border-border/70 bg-background/60 p-3 sm:p-3.5 lg:flex-row lg:items-center lg:justify-between lg:gap-5 lg:p-4">
+          <div className="flex flex-col gap-4 rounded-[1.5rem] border border-border/70 bg-background/60 p-3 sm:p-3.5 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-5 lg:p-4">
             <div className="flex min-w-0 items-center justify-between gap-3 sm:gap-4 lg:w-auto lg:flex-none lg:justify-start">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/15">
                 <Building2 className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">Panel operativo</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">Demo comercial</p>
                 <h1 className="truncate text-lg font-bold tracking-tight text-foreground sm:text-xl">Loteria</h1>
               </div>
 
@@ -113,7 +120,7 @@ export function AppShell() {
                     <div className="border-b border-border/70 px-5 pb-4 pt-5 pr-16">
                       <DialogTitle className="text-left text-lg">Menu principal</DialogTitle>
                       <DialogDescription className="mt-1 text-left">
-                        Accesos principales y acciones globales de la sesion activa.
+                        Flujo principal de la demo y accesos secundarios.
                       </DialogDescription>
 
                       <div className="mt-4 flex items-center gap-3 rounded-2xl border border-border/70 bg-background/80 px-3.5 py-3">
@@ -150,6 +157,40 @@ export function AppShell() {
                           </NavLink>
                         );
                       })}
+
+                      <div className="mt-5 rounded-2xl border border-border/70 bg-background/70 p-4">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Recorrido sugerido</div>
+                        <div className="mt-3 grid gap-2">
+                          {demoJourney.map((step, index) => (
+                            <div
+                              key={step}
+                              className={cn(
+                                'flex min-h-11 items-center justify-between rounded-2xl border px-3 py-2.5 text-sm',
+                                index <= currentJourneyStep ? 'border-primary/25 bg-primary/10 text-foreground' : 'border-border/70 bg-background/80 text-muted-foreground',
+                              )}
+                            >
+                              <span>{step}</span>
+                              <span className="text-xs font-semibold">0{index + 1}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="mt-5 rounded-2xl border border-dashed border-border/70 bg-background/60 p-4">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Capacidades avanzadas</div>
+                        <div className="mt-3 grid gap-2">
+                          {advancedNavigation.map((item) => {
+                            const Icon = item.icon;
+
+                            return (
+                              <NavLink key={item.to} to={item.to} className="flex min-h-11 items-center gap-3 rounded-2xl px-3 py-2 text-sm text-muted-foreground transition hover:bg-accent/60 hover:text-foreground">
+                                <Icon className="h-4 w-4 shrink-0" />
+                                <span>{item.label}</span>
+                              </NavLink>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </nav>
 
                     <div className="border-t border-border/70 bg-background/70 p-4">
@@ -202,6 +243,38 @@ export function AppShell() {
                   Cerrar sesion
                   <LogOut className="h-4 w-4" />
                 </Button>
+              </div>
+            </div>
+
+            <div className="hidden w-full items-start justify-between gap-4 rounded-[1.4rem] border border-border/70 bg-background/55 px-4 py-3 lg:flex lg:basis-full">
+              <div className="min-w-0 space-y-2">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Recorrido demo</div>
+                <div className="flex flex-wrap gap-2">
+                  {demoJourney.map((step, index) => (
+                    <div
+                      key={step}
+                      className={cn(
+                        'inline-flex min-h-10 items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium',
+                        index <= currentJourneyStep ? 'border-primary/25 bg-primary/10 text-foreground' : 'border-border/70 bg-background/80 text-muted-foreground',
+                      )}
+                    >
+                      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-background text-xs font-semibold text-muted-foreground">{index + 1}</span>
+                      <span>{step}</span>
+                      {index < demoJourney.length - 1 ? <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" /> : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="min-w-[220px] space-y-2 text-right">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Capacidades avanzadas</div>
+                <div className="flex flex-wrap justify-end gap-2">
+                  {advancedNavigation.map((item) => (
+                    <NavLink key={item.to} to={item.to} className="inline-flex min-h-10 items-center rounded-full border border-dashed border-border/70 px-3 py-2 text-sm text-muted-foreground transition hover:border-border hover:bg-accent/60 hover:text-foreground">
+                      {item.label}
+                    </NavLink>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
