@@ -30,6 +30,7 @@ export function AppShell() {
   const state = useDemoStore();
   const logout = useDemoStore((store) => store.logout);
   const currentJourneyStep = pathname.startsWith('/agencies') ? 1 : 0;
+  const isActivePath = (path: string) => pathname === path || pathname.startsWith(`${path}/`);
 
   useEffect(() => {
     const main = mainRef.current;
@@ -153,7 +154,7 @@ export function AppShell() {
                           >
                             <Icon className="h-4 w-4 shrink-0" />
                             <span className="flex-1 leading-5">{item.label}</span>
-                            {pathname === item.to ? <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-primary" aria-hidden="true" /> : null}
+                            {isActivePath(item.to) ? <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-primary" aria-hidden="true" /> : null}
                           </NavLink>
                         );
                       })}
@@ -226,7 +227,7 @@ export function AppShell() {
                   >
                     <Icon className="h-4 w-4 shrink-0" />
                     <span className="min-w-0 flex-1 text-left leading-5">{item.label}</span>
-                    {pathname === item.to ? <span className="h-2 w-2 shrink-0 rounded-full bg-primary" /> : null}
+                    {isActivePath(item.to) ? <span className="h-2 w-2 shrink-0 rounded-full bg-primary" /> : null}
                   </NavLink>
                 );
               })}
