@@ -4,8 +4,7 @@ import { ArrowRightLeft } from 'lucide-react';
 import { useDemoStore } from '@/app/store/demo-store';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getAgencyDetailSummary } from '@/lib/business';
 import { formatCurrency, formatDateRange } from '@/lib/format';
 import { getRiskLevelLabel } from '@/lib/labels';
@@ -29,80 +28,106 @@ export function AgencyDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="[overflow-wrap:anywhere]">{detail?.metric.agency.name ?? 'Detalle de agencia'}</DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[520px]">
+        <div className="space-y-4">
+          <DialogHeader className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              {detail ? (
+                <>
+                  <Badge variant={getCollectionBadgeVariant(detail.metric.latestCycleStatus)}>{detail.metric.latestCycleStatus}</Badge>
+                  <Badge variant={getRiskBadgeVariant(detail.metric.riskLevel)}>{getRiskLevelLabel(detail.metric.riskLevel)}</Badge>
+                  <Badge variant="accent">{detail.metric.agency.fleetName}</Badge>
+                </>
+              ) : null}
+            </div>
+            <DialogTitle className="[overflow-wrap:anywhere]">{detail?.metric.agency.name ?? 'Detalle de agencia'}</DialogTitle>
+            <DialogDescription className="sr-only">Detalle de agencia</DialogDescription>
+          </DialogHeader>
 
-        {detail ? (
-          <div className="space-y-5">
-            <section className="detail-hero">
-              <div className="flex flex-wrap gap-2">
-                <Badge variant={getRiskBadgeVariant(detail.metric.riskLevel)}>{getRiskLevelLabel(detail.metric.riskLevel)}</Badge>
-                <Badge variant={getCollectionBadgeVariant(detail.metric.latestCycleStatus)}>{detail.metric.latestCycleStatus}</Badge>
-                <Badge variant="accent">{detail.metric.agency.fleetName}</Badge>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-                  {detail.metric.pendingBalance > 0 ? 'Pendiente de cobro' : 'Estado del cierre'}
-                </p>
-                <h2 className="text-3xl font-semibold tracking-tight text-foreground [overflow-wrap:anywhere] sm:text-4xl">
-                  {detail.metric.pendingBalance > 0 ? formatCurrency(detail.metric.pendingBalance) : 'Sin pendiente hoy'}
-                </h2>
-                <p className="max-w-2xl text-sm leading-6 text-muted-foreground [overflow-wrap:anywhere]">{getUrgencyNarrative(detail.metric)}</p>
-              </div>
-
-              <Button size="lg" className="w-full" onClick={() => onQuickTransfer(detail.metric)}>
-                <ArrowRightLeft className="h-4 w-4" />
-                Registrar transferencia
-              </Button>
-            </section>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Ultimos cierres</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 px-4 pb-4 sm:px-6 sm:pb-6">
-                {detail.cycles.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Sin cierres anteriores registrados.</p>
-                ) : (
-                  detail.cycles.slice(0, 3).map((cycle) => (
-                    <div key={cycle.id} className="rounded-[1.25rem] border border-border/70 bg-background/80 p-4">
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-foreground [overflow-wrap:anywhere]">
-                            {formatDateRange(cycle.periodStart, cycle.periodEnd)}
-                          </p>
-                          <p className="mt-1 text-sm text-muted-foreground">
-                            Debia: {formatCurrency(cycle.totalDue)} · Pago: {formatCurrency(cycle.transfersApplied)}
-                          </p>
-                        </div>
-                        <Badge variant={getCollectionBadgeVariant(cycle.collectionStatus)}>{cycle.collectionStatus}</Badge>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </CardContent>
-            </Card>
-
-            <details className="detail-collapsible group" open={false}>
-              <summary className="detail-collapsible-summary">
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Ficha de agencia</p>
-                  <p className="mt-1 text-sm text-muted-foreground">Datos de contacto y administrativos.</p>
+          {detail ? (
+            <div className="space-y-4">
+              <section className="detail-hero space-y-4">
+                <div className="space-y-2">
+                  <p className="kpi-label">Pendiente de cobro</p>
+                  <p className="text-3xl font-semibold tracking-tight text-foreground">
+                    {detail.metric.pendingBalance > 0 ? formatCurrency(detail.metric.pendingBalance) : 'Sin pendiente'}
+                  </p>
+                  <p className="text-sm leading-6 text-muted-foreground">{getUrgencyNarrative(detail.metric)}</p>
                 </div>
-                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Expandir</span>
-              </summary>
-              <div className="detail-collapsible-content grid gap-4 pt-4 md:grid-cols-2">
-                <InfoItem label="Flota" value={detail.metric.agency.fleetName} />
-                <InfoItem label="Direccion" value={detail.metric.agency.address} />
-                <InfoItem label="Telefono" value={detail.metric.agency.phone} />
-                <InfoItem label="Titular" value={detail.metric.agency.managerName} />
-              </div>
-            </details>
-          </div>
-        ) : null}
+
+                <Button className="w-full" onClick={() => onQuickTransfer(detail.metric)}>
+                  <ArrowRightLeft className="h-4 w-4" />
+                  Registrar transferencia
+                </Button>
+
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <MiniStat label="Total a deber" value={formatCurrency(detail.cycleProgress.totalDue)} />
+                  <MiniStat label="Cobrado hoy" value={formatCurrency(detail.metric.transfersOnDate)} />
+                  <MiniStat
+                    label="Margen al tope"
+                    value={
+                      detail.metric.capUsage >= 100
+                        ? `Excedido ${formatCurrency(Math.abs(detail.metric.capRemaining))}`
+                        : formatCurrency(Math.max(detail.metric.capRemaining, 0))
+                    }
+                  />
+                </div>
+              </section>
+
+              <section className="rounded-[1.35rem] border border-border/70 bg-background/80 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Ultimos cierres</p>
+                    <p className="mt-1 text-sm text-muted-foreground">Comparacion rapida de los tres cortes mas recientes.</p>
+                  </div>
+                  <Badge variant="accent">
+                    {detail.cycleProgress.periodStart && detail.cycleProgress.periodEnd
+                      ? formatDateRange(detail.cycleProgress.periodStart, detail.cycleProgress.periodEnd)
+                      : 'Sin corte'}
+                  </Badge>
+                </div>
+
+                <div className="mt-4 space-y-3">
+                  {detail.cycles.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">Sin cierres anteriores registrados.</p>
+                  ) : (
+                    detail.cycles.slice(0, 3).map((cycle) => (
+                      <div key={cycle.id} className="rounded-[1.15rem] border border-border/70 bg-background/70 px-3 py-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-foreground [overflow-wrap:anywhere]">
+                              {formatDateRange(cycle.periodStart, cycle.periodEnd)}
+                            </p>
+                            <p className="mt-1 text-sm text-muted-foreground">
+                              Debia {formatCurrency(cycle.totalDue)} · Pago {formatCurrency(cycle.transfersApplied)}
+                            </p>
+                          </div>
+                          <Badge variant={getCollectionBadgeVariant(cycle.collectionStatus)}>{cycle.collectionStatus}</Badge>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </section>
+
+              <details className="detail-collapsible group" open={false}>
+                <summary className="detail-collapsible-summary">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Ficha de agencia</p>
+                    <p className="mt-1 text-sm text-muted-foreground">Datos de contacto y administrativos.</p>
+                  </div>
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Expandir</span>
+                </summary>
+                <div className="detail-collapsible-content mt-4 grid gap-3 pt-4 sm:grid-cols-2">
+                  <InfoItem label="Flota" value={detail.metric.agency.fleetName} />
+                  <InfoItem label="Direccion" value={detail.metric.agency.address} />
+                  <InfoItem label="Telefono" value={detail.metric.agency.phone} />
+                  <InfoItem label="Titular" value={detail.metric.agency.managerName} />
+                </div>
+              </details>
+            </div>
+          ) : null}
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -122,20 +147,29 @@ function getRiskBadgeVariant(riskLevel: AgencyMetrics['riskLevel']) {
 
 function getUrgencyNarrative(metric: AgencyMetrics) {
   if (metric.pendingBalance <= 0 && metric.creditBalance > 0) {
-    return `La agencia ya cubrio el cierre y tiene ${formatCurrency(metric.creditBalance)} a favor.`;
+    return `La agencia ya cubrio el cierre actual y mantiene ${formatCurrency(metric.creditBalance)} a favor.`;
   }
   if (metric.latestCycleStatus === 'No pago') {
-    return `No tuvo cobro en el ultimo cierre. Tiene ${formatCurrency(metric.pendingBalance)} pendientes.`;
+    return `No recibio cobro en el ultimo corte. Siguen abiertos ${formatCurrency(metric.pendingBalance)}.`;
   }
   if (metric.latestCycleStatus === 'Parcial') {
-    return `Cobro parcial. Quedan ${formatCurrency(metric.pendingBalance)} abiertos.`;
+    return `Cobro parcial en el periodo visible. Quedan ${formatCurrency(metric.pendingBalance)} por regularizar.`;
   }
-  return 'La agencia esta al dia dentro del cierre visible.';
+  return 'La agencia esta al dia en este corte y solo requiere seguimiento comercial.';
+}
+
+function MiniStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[1.1rem] border border-border/70 bg-background/80 p-3">
+      <p className="data-caption">{label}</p>
+      <p className="mt-2 text-sm font-semibold tabular-nums text-foreground [overflow-wrap:anywhere]">{value}</p>
+    </div>
+  );
 }
 
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.15rem] border border-border/70 bg-background/80 p-4">
+    <div className="rounded-[1.1rem] border border-border/70 bg-background/70 p-3">
       <p className="data-caption">{label}</p>
       <p className="mt-2 text-sm font-semibold text-foreground [overflow-wrap:anywhere]">{value}</p>
     </div>

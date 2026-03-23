@@ -25,10 +25,10 @@ export function CutContextCard({
     return null;
   }
 
-  const modeLabel = coverage.coversFullCut ? 'Corte completo' : 'Fecha dentro del corte';
+  const modeLabel = coverage.coversFullCut ? 'Corte completo' : 'Dentro del corte';
   const detail = coverage.coversFullCut
-    ? `La ventana visible coincide con el bloque completo ${formatDateRange(cut.start, cut.end)}.`
-    : `La fecha operativa ${formatDate(range.end)} cae dentro del bloque ${formatDateRange(cut.start, cut.end)}.`;
+    ? `La ventana visible coincide con ${formatDateRange(cut.start, cut.end)}.`
+    : `La fecha ${formatDate(range.end)} cae dentro de ${formatDateRange(cut.start, cut.end)}.`;
 
   return (
     <Card className={className}>
@@ -48,8 +48,8 @@ export function CutContextCard({
 
           <div className="grid gap-2 sm:grid-cols-3 lg:min-w-[320px]">
             <Stat label="Fecha visible" value={formatDate(range.end)} />
-            <Stat label="Dias mostrados" value={`${coverage.visibleDays}/${coverage.totalDays}`} />
-            <Stat label="Cierre del bloque" value={formatDate(cut.end)} />
+            <Stat label="Dias visibles" value={`${coverage.visibleDays}/${coverage.totalDays}`} />
+            <Stat label="Cierre" value={formatDate(cut.end)} />
           </div>
         </div>
 
@@ -73,7 +73,7 @@ export function CutContextCard({
                   ) : null}
                 </div>
                 <p className="mt-2 text-sm font-semibold text-foreground">{formatDate(date)}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{isVisible ? 'Incluido en la lectura actual' : 'Fuera de la ventana visible'}</p>
+                 <p className="mt-1 text-xs text-muted-foreground">{isVisible ? 'Visible en esta lectura' : 'Fuera de la ventana actual'}</p>
               </div>
             );
           })}

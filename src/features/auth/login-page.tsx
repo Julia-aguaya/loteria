@@ -1,7 +1,8 @@
 import { type FormEvent, useState } from 'react';
-import { LockKeyhole, Sparkles } from 'lucide-react';
+import { Building2, FileUp, LockKeyhole, ShieldCheck } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { demoCredentials, useDemoStore } from '@/app/store/demo-store';
+import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,7 +21,7 @@ export function LoginPage() {
     event.preventDefault();
     const ok = login(username, password);
     if (!ok) {
-      setError('Credenciales invalidas. Usa las credenciales demo precargadas.');
+      setError('Credenciales invalidas. Usa el acceso demo precargado para entrar al panel operativo.');
       return;
     }
 
@@ -44,20 +45,29 @@ export function LoginPage() {
       </div>
       <div className="relative z-10 grid w-full max-w-6xl gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="hidden rounded-[2rem] border border-border/60 bg-black/10 p-10 backdrop-blur-xl dark:bg-white/5 lg:flex lg:flex-col lg:justify-between">
-          <div>
-            <span className="text-xs uppercase tracking-[0.35em] text-primary/80">Lotovibe</span>
+          <div className="space-y-6">
+            <Badge variant="accent" className="w-fit">
+              Modulo 1 · Acceso operativo
+            </Badge>
+            <div>
+              <span className="text-xs uppercase tracking-[0.35em] text-primary/80">Loteria</span>
             <h1 className="mt-6 max-w-xl text-5xl font-semibold leading-tight text-foreground">
-              Una cabina ejecutiva sobria para leer deuda, topes y transferencias sin ruido.
+              Panel administrativo inicial para leer deuda, ventas, cumplimiento y carga operativa desde una misma base.
             </h1>
             <p className="mt-6 max-w-lg text-base leading-8 text-muted-foreground">
-              Demo privada para una provincia, 25 agencias y consolidacion operativa cada 3 dias con incentivos visibles al superar topes.
+              La demo del Modulo 1 concentra registro de multiples loterias, carga por PDF y seguimiento comercial en cortes de 3 dias sin sumar automatizaciones ni flujos fuera del alcance inicial.
             </p>
+            </div>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
-            {['Saldo consolidado', 'Transferencias manuales', 'Comision mejorada'].map((item) => (
-              <div key={item} className="rounded-2xl border border-border/60 bg-card/55 p-5">
-                <Sparkles className="h-5 w-5 text-primary" />
-                <p className="mt-4 text-sm font-medium text-foreground">{item}</p>
+            {[
+              { icon: Building2, label: 'Registro de multiples loterias' },
+              { icon: FileUp, label: 'Carga de datos via PDF' },
+              { icon: ShieldCheck, label: 'Deuda, ventas y cumplimiento' },
+            ].map(({ icon: Icon, label }) => (
+              <div key={label} className="rounded-2xl border border-border/60 bg-card/55 p-5">
+                <Icon className="h-5 w-5 text-primary" />
+                <p className="mt-4 text-sm font-medium text-foreground">{label}</p>
               </div>
             ))}
           </div>
@@ -68,10 +78,10 @@ export function LoginPage() {
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
               <LockKeyhole className="h-6 w-6" />
             </div>
-            <CardTitle className="pt-4 text-3xl">Ingreso demo</CardTitle>
-              <CardDescription>
-                Ingreso resuelto con credenciales demo en memoria y restauracion temporal opcional en este navegador.
-              </CardDescription>
+            <CardTitle className="pt-4 text-3xl">Ingreso al panel administrativo</CardTitle>
+            <CardDescription>
+              Accede con las credenciales demo para revisar la base operativa del Modulo 1 y recuperar la sesion local si ya estabas trabajando en este navegador.
+            </CardDescription>
           </CardHeader>
           <CardContent className="p-8 pt-4">
             <form className="space-y-6" onSubmit={handleSubmit} noValidate>
@@ -86,11 +96,11 @@ export function LoginPage() {
                   onChange={(event) => setUsername(event.target.value)}
                 />
                 <p id="username-help" className="text-sm text-muted-foreground">
-                  Usamos el correo demo para entrar rapido a la consola.
+                  El correo demo ya viene listo para entrar directo al flujo operativo.
                 </p>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password">Clave</Label>
+                <Label htmlFor="password">Clave de acceso</Label>
                 <Input
                   id="password"
                   type="password"
@@ -100,7 +110,7 @@ export function LoginPage() {
                   onChange={(event) => setPassword(event.target.value)}
                 />
                 <p id="password-help" className="text-sm text-muted-foreground">
-                  La clave demo ya viene precargada para validar el flujo completo con Enter o el boton de acceso.
+                  La clave demo esta precargada para validar rapido el acceso al panel inicial con Enter o el boton principal.
                 </p>
               </div>
               {error ? (
@@ -109,11 +119,11 @@ export function LoginPage() {
                 </p>
               ) : null}
               <Button type="submit" className="w-full" size="lg">
-                Entrar a la consola
+                Entrar al Modulo 1
               </Button>
             </form>
             <div className="mt-6 rounded-2xl border border-border/70 bg-background/40 p-4 text-sm text-muted-foreground">
-              <p className="font-medium text-foreground">Credenciales demo</p>
+              <p className="font-medium text-foreground">Acceso demo precargado</p>
               <p className="mt-2">Usuario: {demoCredentials.username}</p>
               <p>Clave: {demoCredentials.password}</p>
             </div>

@@ -103,26 +103,26 @@ export function TemporalToolbar({
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             <History className="h-3.5 w-3.5" />
-            Navegacion temporal
+            Periodo
           </div>
           <div className="flex flex-wrap gap-2">
             <span className="section-chip">
               <CalendarRange className="h-4 w-4 text-primary" />
               {activeLabel}
             </span>
-            <span className="section-chip">Ventana {visibleRange}</span>
-            <span className="section-chip">Cierre activo {formatDate(value.end)}</span>
+              <span className="section-chip">Ventana {visibleRange}</span>
+              <span className="section-chip">Cierre {formatDate(value.end)}</span>
           </div>
-          <p className="toolbar-note">{helper}</p>
+          {helper ? <p className="toolbar-note">{helper}</p> : null}
         </div>
 
         <div className="flex flex-wrap gap-2 xl:justify-end">
           <Button type="button" size="sm" variant="outline" disabled={!canGoPrevious} onClick={() => onShift(-1)}>
             <ArrowLeft className="h-4 w-4" />
-            Anterior
+            Periodo anterior
           </Button>
           <Button type="button" size="sm" variant="outline" disabled={!canGoNext} onClick={() => onShift(1)}>
-            Siguiente
+            Periodo siguiente
             <ArrowRight className="h-4 w-4" />
           </Button>
           {compact ? (

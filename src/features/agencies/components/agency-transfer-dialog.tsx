@@ -4,7 +4,7 @@ import { ArrowRightLeft, CheckCircle2, Sparkles } from 'lucide-react';
 import { useDemoStore } from '@/app/store/demo-store';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -73,9 +73,10 @@ export function AgencyTransferDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <DialogTitle>{metric ? `Registrar transferencia para ${metric.agency.name}` : 'Registrar transferencia'}</DialogTitle>
+          <DialogDescription className="sr-only">Registrar transferencia</DialogDescription>
         </DialogHeader>
 
         {metric && context ? (
@@ -105,23 +106,32 @@ export function AgencyTransferDialog({
                 setConfirmation({ agencyId: metric.agency.id, amount: parsedAmount, date });
               }}
             >
-              <div className="rounded-[1.4rem] border border-border/70 bg-background/75 p-4">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground">{metric.agency.fleetName}</span>
-                  {' · '}
-                  Fecha operativa: {formatDate(date)}
-                </p>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="accent">{metric.agency.fleetName}</Badge>
+                <Badge variant={metric.pendingBalance > 0 ? 'danger' : 'success'}>
+                  {metric.pendingBalance > 0 ? 'Con pendiente' : 'Sin pendiente'}
+                </Badge>
+                <Badge variant="default">Fecha {formatDate(date)}</Badge>
               </div>
 
-              <div className="rounded-[1.4rem] border border-primary/20 bg-primary/8 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Monto sugerido para saldar el cierre</p>
-                <p className="mt-2 text-2xl font-semibold tabular-nums text-foreground">{formatCurrency(suggestedAmount)}</p>
+              <div className="detail-hero space-y-4">
+                <div>
+                  <p className="kpi-label">Monto sugerido</p>
+                  <p className="mt-2 text-3xl font-semibold tabular-nums text-foreground">{formatCurrency(suggestedAmount)}</p>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">El sugerido cubre el total a deber del corte actual sin tocar la logica del saldo.</p>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <ContextStat label="Pendiente anterior" value={formatCurrency(context.pendingBefore)} />
+                  <ContextStat label="Nuevo corte" value={formatCurrency(context.newCut)} />
+                  <ContextStat label="Total a deber" value={formatCurrency(context.totalDue)} />
+                </div>
               </div>
 
               <div className="impact-panel">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Resultado si confirmas este monto</p>
+                    <p className="kpi-label text-primary">Proyeccion del monto</p>
                     <p className="mt-2 text-lg font-semibold text-foreground">{projection.headline}</p>
                     <p className="mt-1 text-sm leading-6 text-muted-foreground">{projection.message}</p>
                   </div>
@@ -133,9 +143,10 @@ export function AgencyTransferDialog({
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="grid gap-2">
-                  <Label htmlFor="agency-transfer-date">Fecha de la transferencia</Label>
+                  <Label htmlFor="agency-transfer-date">Fecha</Label>
                   <Input id="agency-transfer-date" type="date" value={date} onChange={(event) => setDate(event.target.value)} />
                 </div>
+
                 <div className="grid gap-2">
                   <Label htmlFor="agency-transfer-amount">Monto</Label>
                   <Input
@@ -155,15 +166,15 @@ export function AgencyTransferDialog({
                       {amountError}
                     </p>
                   ) : null}
-                  <Button type="button" size="sm" variant="outline" className="min-h-10" onClick={() => setAmount(String(suggestedAmount))}>
+                  <Button type="button" size="sm" variant="outline" onClick={() => setAmount(String(suggestedAmount))}>
                     <Sparkles className="h-4 w-4" />
-                    Usar monto sugerido ({formatCurrency(suggestedAmount)})
+                    Usar sugerido
                   </Button>
                 </div>
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="agency-transfer-notes">Nota (opcional)</Label>
+                <Label htmlFor="agency-transfer-notes">Referencia o nota</Label>
                 <Textarea
                   id="agency-transfer-notes"
                   value={notes}
@@ -174,10 +185,10 @@ export function AgencyTransferDialog({
               </div>
 
               <DialogFooter>
-                <Button type="button" variant="ghost" className="min-h-11" onClick={() => onOpenChange(false)}>
+                <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
                   Cancelar
                 </Button>
-                <Button type="submit" className="min-h-11" disabled={Boolean(amountError)}>
+                <Button type="submit" disabled={Boolean(amountError)}>
                   <ArrowRightLeft className="h-4 w-4" />
                   Confirmar transferencia
                 </Button>
@@ -210,9 +221,9 @@ function TransferSuccessState({
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-success/15 text-emerald-700 dark:text-emerald-300">
             <CheckCircle2 className="h-6 w-6" />
           </div>
-          <h3 className="text-2xl font-semibold text-foreground">Transferencia confirmada</h3>
+          <h3 className="text-2xl font-semibold text-foreground">Transferencia registrada</h3>
           <p className="text-sm leading-6 text-muted-foreground">
-            Se registraron {formatCurrency(amount)} para {agencyName} con fecha {formatDate(date)}.
+            Se cargaron {formatCurrency(amount)} para {agencyName} con fecha {formatDate(date)}.
           </p>
         </div>
       </div>
@@ -223,10 +234,17 @@ function TransferSuccessState({
       </div>
 
       <DialogFooter>
-        <Button className="min-h-11" onClick={onReturn}>
-          Volver al detalle
-        </Button>
+        <Button onClick={onReturn}>Volver al detalle</Button>
       </DialogFooter>
+    </div>
+  );
+}
+
+function ContextStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[1.1rem] border border-border/70 bg-background/80 p-3">
+      <p className="data-caption">{label}</p>
+      <p className="mt-2 text-sm font-semibold tabular-nums text-foreground">{value}</p>
     </div>
   );
 }

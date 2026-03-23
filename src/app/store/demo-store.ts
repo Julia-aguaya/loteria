@@ -4,8 +4,8 @@ import { createInitialAgencies, createInitialConfiguration, createInitialDailySa
 import type { Agency, AppConfiguration, DailySale, DemoState, SessionState, Transfer } from '@/types/domain';
 
 const SESSION_STORAGE_KEY = 'lotovibe-session';
-const DEMO_USERNAME = 'demo@lotovibe.app';
-const DEMO_PASSWORD = 'lotovibe-2026';
+const DEMO_USERNAME = 'demo@loteria.app';
+const DEMO_PASSWORD = 'loteria-2026';
 
 function getStoredSession() {
   if (typeof window === 'undefined') {

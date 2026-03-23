@@ -7,56 +7,56 @@
 @layer base {
   :root {
     color-scheme: light;
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 72% 51%;
+    --background: 224 37% 10%;
+    --foreground: 210 40% 96%;
+    --card: 224 34% 13%;
+    --card-foreground: 210 40% 96%;
+    --popover: 224 34% 14%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 214 92% 61%;
+    --primary-foreground: 224 40% 10%;
+    --secondary: 223 26% 18%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 223 25% 18%;
+    --muted-foreground: 217 18% 70%;
+    --accent: 223 30% 16%;
+    --accent-foreground: 210 40% 96%;
+    --destructive: 350 84% 62%;
     --destructive-foreground: 210 40% 98%;
-    --success: 142 71% 45%;
+    --success: 160 84% 40%;
     --success-foreground: 210 40% 98%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 222 47% 11%;
-    --border: 214 32% 91%;
-    --input: 214 32% 96%;
-    --ring: 221 83% 53%;
+    --warning: 41 92% 58%;
+    --warning-foreground: 224 40% 10%;
+    --border: 221 23% 24%;
+    --input: 223 26% 16%;
+    --ring: 214 92% 61%;
   }
 
   .dark {
     color-scheme: dark;
     --background: 222 45% 9%;
     --foreground: 210 40% 98%;
-    --card: 222 34% 12%;
+    --card: 223 37% 12%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 34% 12%;
+    --popover: 223 37% 12%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 66%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 217 30% 18%;
+    --primary: 212 92% 62%;
+    --primary-foreground: 224 40% 10%;
+    --secondary: 222 29% 17%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217 30% 18%;
-    --muted-foreground: 215 18% 78%;
-    --accent: 217 30% 18%;
+    --muted: 222 29% 17%;
+    --muted-foreground: 216 17% 72%;
+    --accent: 222 30% 16%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 72% 58%;
+    --destructive: 350 84% 64%;
     --destructive-foreground: 210 40% 98%;
-    --success: 142 71% 42%;
+    --success: 160 84% 42%;
     --success-foreground: 210 40% 98%;
-    --warning: 40 96% 58%;
-    --warning-foreground: 222 47% 11%;
-    --border: 217 24% 26%;
-    --input: 217 27% 16%;
-    --ring: 217 91% 66%;
+    --warning: 41 92% 58%;
+    --warning-foreground: 224 40% 10%;
+    --border: 220 22% 25%;
+    --input: 222 30% 15%;
+    --ring: 212 92% 62%;
   }
 
   * {
@@ -84,18 +84,18 @@
   body {
     @apply min-h-screen bg-background text-foreground antialiased;
     background-image:
-      radial-gradient(circle at top left, rgba(59, 130, 246, 0.12), transparent 24%),
-      radial-gradient(circle at right center, rgba(14, 165, 233, 0.08), transparent 24%),
-      linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(241, 245, 249, 1));
+      radial-gradient(circle at top left, rgba(59, 130, 246, 0.16), transparent 24%),
+      radial-gradient(circle at right 20%, rgba(14, 165, 233, 0.12), transparent 28%),
+      linear-gradient(180deg, rgba(8, 15, 30, 0.99), rgba(12, 18, 33, 1));
     font-family: 'Instrument Sans', sans-serif;
     line-height: 1.5;
   }
 
   .dark body {
     background-image:
-      radial-gradient(circle at top left, rgba(59, 130, 246, 0.2), transparent 28%),
-      radial-gradient(circle at right center, rgba(14, 165, 233, 0.14), transparent 26%),
-      linear-gradient(180deg, rgba(7, 15, 30, 0.98), rgba(12, 20, 36, 1));
+      radial-gradient(circle at top left, rgba(59, 130, 246, 0.22), transparent 28%),
+      radial-gradient(circle at right center, rgba(14, 165, 233, 0.16), transparent 26%),
+      linear-gradient(180deg, rgba(7, 15, 30, 0.98), rgba(10, 18, 32, 1));
   }
 
   h1,
@@ -108,7 +108,7 @@
   }
 
   ::selection {
-    background: rgba(59, 130, 246, 0.2);
+    background: rgba(59, 130, 246, 0.3);
   }
 
   .dark ::selection {
@@ -122,8 +122,8 @@
   }
 
   .surface {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.92));
-    box-shadow: 0 22px 60px rgba(15, 23, 42, 0.08);
+    background: linear-gradient(180deg, rgba(18, 28, 48, 0.96), rgba(11, 18, 32, 0.92));
+    box-shadow: 0 22px 60px rgba(2, 6, 23, 0.38);
   }
 
   .dark .surface {
@@ -141,7 +141,7 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(140deg, rgba(59, 130, 246, 0.16), rgba(255, 255, 255, 0.04), rgba(148, 163, 184, 0.14));
+    background: linear-gradient(140deg, rgba(96, 165, 250, 0.22), rgba(255, 255, 255, 0.03), rgba(148, 163, 184, 0.12));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -153,7 +153,7 @@
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 1), rgba(37, 99, 235, 0.78));
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.98), rgba(96, 165, 250, 0.82));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -167,11 +167,28 @@
   }
 
   .panel {
-    @apply rounded-3xl border border-border bg-card shadow-[0_16px_40px_rgba(15,23,42,0.08)] dark:shadow-[0_20px_56px_rgba(2,6,23,0.38)];
+    @apply rounded-3xl border border-border bg-card shadow-[0_18px_44px_rgba(2,6,23,0.32)] dark:shadow-[0_20px_56px_rgba(2,6,23,0.42)];
   }
 
   .panel-elevated {
-    @apply rounded-3xl border border-border bg-card shadow-[0_24px_64px_rgba(15,23,42,0.10)] dark:shadow-[0_28px_72px_rgba(2,6,23,0.44)];
+    @apply rounded-3xl border border-border bg-card shadow-[0_26px_72px_rgba(2,6,23,0.40)] dark:shadow-[0_28px_72px_rgba(2,6,23,0.48)];
+  }
+
+  .app-sidebar {
+    @apply panel-elevated px-5 py-6;
+    background: linear-gradient(180deg, rgba(14, 22, 40, 0.98), rgba(10, 17, 30, 0.96));
+  }
+
+  .app-nav-item {
+    @apply flex min-h-12 items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  .app-nav-item-active {
+    @apply border-primary/25 bg-primary/10 text-primary shadow-sm;
+  }
+
+  .app-nav-item-idle {
+    @apply border-transparent bg-transparent text-muted-foreground hover:border-border hover:bg-accent hover:text-foreground;
   }
 
   .kpi-label {
@@ -296,5 +313,9 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }

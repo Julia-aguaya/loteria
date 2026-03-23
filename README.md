@@ -1,4 +1,4 @@
-# Lotovibe
+# Loteria
 
 Premium fintech frontend demo for lottery agency management.
 
@@ -11,8 +11,8 @@ npm run dev
 
 ## Demo login
 
-- Email: `demo@lotovibe.app`
-- Password: `lotovibe-2026`
+- Email: `demo@loteria.app`
+- Password: `loteria-2026`
 
 ## Stack
 

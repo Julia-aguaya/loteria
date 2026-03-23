@@ -33,5 +33,5 @@
 ## Deuda editorial o tecnica detectada
 
 - `docs/lotovibe-source-of-truth.md` quedo como antecedente historico y hoy tiene partes desalineadas con la UI actual.
-- El naming `Lotovibe` sigue presente en archivos y credenciales, mientras la shell visible usa `Loteria`.
+- El naming `Lotovibe` sigue presente en archivos internos, metadata tecnica y docs historicos, mientras la UI visible ya usa `Loteria`.
 - Conviene decidir si el producto final mantiene uno de esos nombres para evitar ruido.
