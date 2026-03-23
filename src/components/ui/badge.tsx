@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
-const badgeVariants = cva('inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold', {
+const badgeVariants = cva('inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-center text-xs font-semibold whitespace-normal [overflow-wrap:anywhere]', {
   variants: {
     variant: {
       default: 'border-border bg-muted/70 text-muted-foreground',

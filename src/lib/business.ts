@@ -62,6 +62,18 @@ function getRiskLevel(capUsage: number, pendingBalance: number) {
   return 'healthy' as const;
 }
 
+function getRiskWeight(riskLevel: AgencyMetrics['riskLevel']) {
+  if (riskLevel === 'critical') {
+    return 2;
+  }
+
+  if (riskLevel === 'attention') {
+    return 1;
+  }
+
+  return 0;
+}
+
 function getAgencySales(state: DemoState, agencyId: string, upToDate?: string) {
   return sortByDate(state.dailySales.filter((sale) => sale.agencyId === agencyId && (!upToDate || sale.date <= upToDate)));
 }
@@ -283,6 +295,29 @@ export function deriveAgencyMetrics(state: DemoState, selectedDate = getLatestBu
   });
 }
 
+export function compareAgencyPriority(left: AgencyMetrics, right: AgencyMetrics) {
+  const rightRisk = getRiskWeight(right.riskLevel);
+  const leftRisk = getRiskWeight(left.riskLevel);
+
+  if (rightRisk !== leftRisk) {
+    return rightRisk - leftRisk;
+  }
+
+  if (right.pendingBalance !== left.pendingBalance) {
+    return right.pendingBalance - left.pendingBalance;
+  }
+
+  if (right.capUsage !== left.capUsage) {
+    return right.capUsage - left.capUsage;
+  }
+
+  return right.latestCycleTotalDue - left.latestCycleTotalDue;
+}
+
+export function sortAgencyMetricsByPriority(metrics: AgencyMetrics[]) {
+  return metrics.slice().sort(compareAgencyPriority);
+}
+
 export function getAgencyDetailSummary(state: DemoState, agencyId: string, selectedDate = getLatestBusinessDate(state) ?? new Date().toISOString().slice(0, 10)) {
   const metric = deriveAgencyMetrics(state, selectedDate).find((item) => item.agency.id === agencyId) ?? null;
   if (!metric) {
@@ -364,6 +399,38 @@ export function getTransferBatchContext(state: DemoState, agencyId: string, sele
     pendingBefore: cycleProgress.pendingBefore,
     newCut: cycleProgress.salesToDate,
     totalDue: cycleProgress.totalDue,
+  };
+}
+
+export function getTransferProjection(totalDue: number, amount: number) {
+  const remaining = totalDue - amount;
+
+  if (remaining > 0) {
+    return {
+      state: 'pending' as const,
+      pendingAfter: remaining,
+      creditAfter: 0,
+      headline: `Queda pendiente ${remaining.toLocaleString('es-AR')}`,
+      message: 'La agencia sigue con saldo abierto en este cierre y necesitara una nueva regularizacion.',
+    };
+  }
+
+  if (remaining < 0) {
+    return {
+      state: 'credit' as const,
+      pendingAfter: 0,
+      creditAfter: Math.abs(remaining),
+      headline: `Queda saldo a favor ${Math.abs(remaining).toLocaleString('es-AR')}`,
+      message: 'El excedente queda registrado como credito para el siguiente movimiento.',
+    };
+  }
+
+  return {
+    state: 'settled' as const,
+    pendingAfter: 0,
+    creditAfter: 0,
+    headline: 'La agencia queda al dia',
+    message: 'El monto sugerido resuelve el cierre actual sin dejar saldo remanente.',
   };
 }
 

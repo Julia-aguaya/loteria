@@ -8,7 +8,7 @@ const agencyStatusLabels: Record<AgencyStatus, string> = {
 
 const riskLevelLabels: Record<AgencyMetrics['riskLevel'], string> = {
   healthy: 'Estable',
-  attention: 'Requiere revision',
+  attention: 'Riesgo medio',
   critical: 'Riesgo alto',
 };
 

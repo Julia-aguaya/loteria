@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/NoxiePC/.agents/skills/ui-ux-pro-max/**)",
+      "Bash(python skills/ui-ux-pro-max/scripts/search.py \"financial operations dashboard loteria agencies management senior user\" --design-system -p \"Loteria\")",
+      "Bash(python3 \"C:/Users/NoxiePC/.claude/skills/ui-ux-pro-max/scripts/search.py\" \"financial operations dashboard loteria agencies management senior user\" --design-system -p \"Loteria\")",
+      "Bash(python:*)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}

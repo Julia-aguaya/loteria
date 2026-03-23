@@ -1,4 +1,5 @@
-import { ArrowLeft, ArrowRight, CalendarRange, History, RotateCcw } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, ArrowRight, CalendarRange, ChevronDown, History, RotateCcw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +16,8 @@ const presetLabels: Record<Exclude<TemporalPreset, 'custom'>, string> = {
 };
 
 export function TemporalToolbar({
+  compact = false,
+  compactLabel = 'Cambiar fecha',
   value,
   canGoNext,
   canGoPrevious,
@@ -28,6 +31,8 @@ export function TemporalToolbar({
   value: TemporalRange;
   canGoNext: boolean;
   canGoPrevious: boolean;
+  compact?: boolean;
+  compactLabel?: string;
   helper: string;
   maxDate: string;
   minDate: string;
@@ -35,40 +40,11 @@ export function TemporalToolbar({
   onPresetChange: (preset: Exclude<TemporalPreset, 'custom'>) => void;
   onShift: (direction: -1 | 1) => void;
 }) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const activeLabel = value.preset === 'custom' ? 'Rango personalizado' : presetLabels[value.preset];
   const visibleRange = value.start === value.end ? formatDate(value.end) : formatDateRange(value.start, value.end);
-
-  return (
-    <div className="filter-toolbar space-y-4">
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            <History className="h-3.5 w-3.5" />
-            Navegacion temporal
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <span className="section-chip">
-              <CalendarRange className="h-4 w-4 text-primary" />
-              {activeLabel}
-            </span>
-            <span className="section-chip">Ventana {visibleRange}</span>
-            <span className="section-chip">Cierre activo {formatDate(value.end)}</span>
-          </div>
-          <p className="toolbar-note">{helper}</p>
-        </div>
-
-        <div className="flex flex-wrap gap-2 xl:justify-end">
-          <Button type="button" size="sm" variant="outline" disabled={!canGoPrevious} onClick={() => onShift(-1)}>
-            <ArrowLeft className="h-4 w-4" />
-            Anterior
-          </Button>
-          <Button type="button" size="sm" variant="outline" disabled={!canGoNext} onClick={() => onShift(1)}>
-            Siguiente
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-
+  const controls = (
+    <>
       <div className="flex flex-wrap gap-2">
         {(Object.keys(presetLabels) as Array<Exclude<TemporalPreset, 'custom'>>).map((preset) => {
           const active = value.preset === preset;
@@ -118,6 +94,47 @@ export function TemporalToolbar({
           Usar solo cierre activo
         </Button>
       </div>
+    </>
+  );
+
+  return (
+    <div className="filter-toolbar space-y-4">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+            <History className="h-3.5 w-3.5" />
+            Navegacion temporal
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="section-chip">
+              <CalendarRange className="h-4 w-4 text-primary" />
+              {activeLabel}
+            </span>
+            <span className="section-chip">Ventana {visibleRange}</span>
+            <span className="section-chip">Cierre activo {formatDate(value.end)}</span>
+          </div>
+          <p className="toolbar-note">{helper}</p>
+        </div>
+
+        <div className="flex flex-wrap gap-2 xl:justify-end">
+          <Button type="button" size="sm" variant="outline" disabled={!canGoPrevious} onClick={() => onShift(-1)}>
+            <ArrowLeft className="h-4 w-4" />
+            Anterior
+          </Button>
+          <Button type="button" size="sm" variant="outline" disabled={!canGoNext} onClick={() => onShift(1)}>
+            Siguiente
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+          {compact ? (
+            <Button type="button" size="sm" variant="ghost" onClick={() => setIsExpanded((current) => !current)}>
+              {compactLabel}
+              <ChevronDown className={cn('h-4 w-4 transition-transform duration-200', isExpanded ? 'rotate-180' : undefined)} />
+            </Button>
+          ) : null}
+        </div>
+      </div>
+
+      {compact ? (isExpanded ? <div className="space-y-4 border-t border-border/60 pt-4">{controls}</div> : null) : controls}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRightLeft, CheckCircle2, Search, X } from 'lucide-react';
 
 import { useDemoStore } from '@/app/store/demo-store';
+import { CutContextCard } from '@/components/operations/cut-context-card';
 import { TemporalToolbar } from '@/components/operations/temporal-toolbar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -48,8 +49,10 @@ export function TransfersPage() {
       }),
     [fleetId, metrics, query],
   );
+  const metricAgencyIds = useMemo(() => new Set(metrics.map((metric) => metric.agency.id)), [metrics]);
   const filteredAgencyIds = useMemo(() => new Set(filtered.map((metric) => metric.agency.id)), [filtered]);
   const selectedMetrics = metrics.filter((metric) => selectedAgencyIds.includes(metric.agency.id));
+  const hiddenSelectedCount = selectedMetrics.filter((metric) => !filteredAgencyIds.has(metric.agency.id)).length;
   const rowContexts = selectedMetrics.map((metric) => ({
     metric,
     context: getTransferBatchContext(state, metric.agency.id, date),
@@ -103,11 +106,21 @@ export function TransfersPage() {
   const canGoNext = temporalRange.end < temporalBounds.maxDate;
 
   useEffect(() => {
-    setSelectedAgencyIds((current) => current.filter((agencyId) => filteredAgencyIds.has(agencyId)));
+    setSelectedAgencyIds((current) => current.filter((agencyId) => metricAgencyIds.has(agencyId)));
     setAmountsByAgencyId((current) =>
-      Object.fromEntries(Object.entries(current).filter(([agencyId]) => filteredAgencyIds.has(agencyId))),
+      Object.fromEntries(Object.entries(current).filter(([agencyId]) => metricAgencyIds.has(agencyId))),
     );
-  }, [filteredAgencyIds]);
+  }, [metricAgencyIds]);
+
+  function toggleVisibleSelection() {
+    setSelectedAgencyIds((current) => {
+      if (allFilteredSelected) {
+        return current.filter((agencyId) => !filteredAgencyIds.has(agencyId));
+      }
+
+      return Array.from(new Set([...current, ...filtered.map((metric) => metric.agency.id)]));
+    });
+  }
 
   function toggleAgency(agencyId: string) {
     const exists = selectedAgencyIds.includes(agencyId);
@@ -159,7 +172,7 @@ export function TransfersPage() {
   return (
     <div className="space-y-6">
       <SectionHeading
-        eyebrow="Transferencias globales"
+        eyebrow="Carga masiva"
         title="Seleccion, resumen conjunto y carga multiple"
         description="Primero armas la seleccion, despues validas el agregado del corte y al final cargas los montos por agencia en un modal rapido de operar."
       />
@@ -175,6 +188,8 @@ export function TransfersPage() {
         onShift={(direction) => setTemporalRange((current) => shiftTemporalRange(state, current, direction))}
         onCustomRangeChange={(start, end) => setTemporalRange(buildCustomTemporalRange(state, start, end))}
       />
+
+      <CutContextCard state={state} range={temporalRange} title="Bloque temporal para la carga" />
 
       {statusMessage ? (
         <div className="rounded-2xl border border-success/20 bg-success/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300" role="status" aria-live="polite">
@@ -197,15 +212,15 @@ export function TransfersPage() {
                   <Label htmlFor="transfer-search">Buscar agencia</Label>
                   <div className="relative">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input id="transfer-search" className="pl-9 pr-11" placeholder="Nombre, codigo o flota" value={query} onChange={(event) => setQuery(event.target.value)} />
-                    {query ? (
-                      <button
-                        type="button"
-                        aria-label="Limpiar busqueda"
-                        className="absolute right-3 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
-                        onClick={() => setQuery('')}
-                      >
-                        <X className="h-4 w-4" />
+                     <Input id="transfer-search" className="pl-9 pr-11" placeholder="Nombre, codigo o flota" value={query} onChange={(event) => setQuery(event.target.value)} />
+                     {query ? (
+                       <button
+                         type="button"
+                         aria-label="Limpiar busqueda"
+                         className="absolute right-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                         onClick={() => setQuery('')}
+                       >
+                         <X className="h-4 w-4" />
                       </button>
                     ) : null}
                   </div>
@@ -241,9 +256,9 @@ export function TransfersPage() {
                   <Button
                     size="sm"
                     variant={allFilteredSelected ? 'secondary' : 'outline'}
-                    onClick={() => setSelectedAgencyIds(allFilteredSelected ? [] : filtered.map((metric) => metric.agency.id))}
+                    onClick={toggleVisibleSelection}
                   >
-                    {allFilteredSelected ? 'Quitar seleccion total' : 'Seleccionar todas las visibles'}
+                    {allFilteredSelected ? 'Quitar visibles' : 'Seleccionar visibles'}
                   </Button>
                   <Button size="sm" variant="ghost" onClick={clearSelection}>
                     Limpiar seleccion
@@ -274,12 +289,14 @@ export function TransfersPage() {
                     <span className="section-chip">{filtered.length} agencias visibles</span>
                   </div>
                   <p className="toolbar-note">
-                    {selectedAgencyIds.length === 0
-                      ? 'Todavia no hay agencias marcadas. La seleccion vive solo en esta vista y se limpia si cambias los filtros.'
-                      : `${selectedAgencyIds.length} agencias listas para revisar el resumen o cargar montos en bloque.`}
+                    {selectedMetrics.length === 0
+                      ? 'Todavia no hay agencias marcadas. La seleccion y los montos se conservan aunque cambies filtros o periodo.'
+                      : hiddenSelectedCount > 0
+                        ? `${selectedMetrics.length} agencias seleccionadas (${hiddenSelectedCount} fuera de la vista actual).`
+                        : `${selectedMetrics.length} agencias listas para revisar el resumen o cargar montos en bloque.`}
                   </p>
                 </div>
-                <p className="toolbar-note">El modal usa la fecha final del periodo como impacto visible de cada transferencia y te deja completar el total a deber con un click.</p>
+                <p className="toolbar-note">El modal usa la fecha final del periodo como impacto visible de cada transferencia y mantiene tu carga si ajustas filtros o cambias la ventana.</p>
               </div>
             </div>
 
@@ -323,7 +340,7 @@ export function TransfersPage() {
                               checked={checked}
                               onChange={() => toggleAgency(metric.agency.id)}
                               aria-label={`Seleccionar ${metric.agency.name}`}
-                              className="h-4 w-4 rounded border-border text-primary focus:ring-ring"
+                              className="h-5 w-5 rounded border-border text-primary focus:ring-ring"
                             />
                           </TableCell>
                           <TableCell>
@@ -405,7 +422,7 @@ export function TransfersPage() {
                 </Button>
                 <Button disabled={selectedMetrics.length === 0} onClick={() => setIsBulkDialogOpen(true)}>
                   <ArrowRightLeft className="h-4 w-4" />
-                  Cargar transferencias
+                  Confirmar transferencias
                 </Button>
               </div>
             </CardContent>
@@ -565,7 +582,7 @@ function BulkTransferDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl">
           <DialogHeader>
-            <DialogTitle>Cargar transferencias</DialogTitle>
+            <DialogTitle>Confirmar transferencias</DialogTitle>
             <DialogDescription>Una fila por agencia, con fecha y nota compartidas arriba. Puedes completar el total a deber del periodo {periodLabel} en un click o ajustar cada monto manualmente.</DialogDescription>
           </DialogHeader>
 
